@@ -8,7 +8,7 @@ exports.createUser = async (req, res) => {
       full_name, email, password, mobile_number, address,
       registration_date, trading_categories, gender, state,
       broker, refer_id, exness_broker_id, app_name,
-      api_key, api_secret_key
+      api_key, api_secret_key, trading_amount, categoryId
     } = req.body;
 
     const existingUser = await User.findOne({ where: { email } });
@@ -23,9 +23,10 @@ exports.createUser = async (req, res) => {
       full_name, email, password: hashedPassword, mobile_number, address,
       registration_date, trading_categories, gender, state,
       broker, refer_id, exness_broker_id, app_name,
-      api_key, api_secret_key,
+      api_key, api_secret_key, trading_amount,
       aadhar_front: aadharFront,
-      aadhar_back: aadharBack
+      aadhar_back: aadharBack,
+      categoryId // important
     });
 
     res.status(201).json({ message: 'User created', user });
@@ -33,6 +34,7 @@ exports.createUser = async (req, res) => {
     res.status(500).json({ message: 'Error creating user', error: err.message });
   }
 };
+
 
 // Get all
 exports.getAllUsers = async (req, res) => {

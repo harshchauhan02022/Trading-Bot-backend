@@ -1,26 +1,25 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../../config/db");
 
-// Category model
-const Category = sequelize.define("categories", {
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  trading_amount: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  }
+const Category = sequelize.define("Category", {
+ name: {
+  type: DataTypes.STRING,
+  allowNull: false
+ },
+ trading_amount: {
+  type: DataTypes.INTEGER,
+  allowNull: false
+ }
 }, {
-  tableName: "categories",
-  timestamps: false // Since you don't have createdAt/updatedAt in DB
+ tableName: "categories",
+ timestamps: false
 });
 
-// User model
-const User = require("./user.Model");
+const User = sequelize.define("User", {
 
-// Associations
-Category.hasMany(User, { foreignKey: "categoryId" });
-User.belongsTo(Category, { foreignKey: "categoryId" });
+}, {
+ tableName: "users",
+ timestamps: false
+});
 
 module.exports = { Category, User };

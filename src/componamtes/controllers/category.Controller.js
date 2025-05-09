@@ -1,4 +1,4 @@
-const { Category, User } = require("../models/category.Model");
+const { Category, User } = require("../models/category.model");
 
 exports.addCategory = async (req, res) => {
   try {
@@ -12,7 +12,12 @@ exports.addCategory = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.findAll({ include: Category });
+    const users = await User.findAll({
+      include: {
+        model: Category,
+        attributes: ['id', 'name', 'trading_amount']
+      }
+    });
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -24,7 +29,10 @@ exports.getUsersByAmount = async (req, res) => {
     const amount = req.params.amount;
     const users = await User.findAll({
       where: { trading_amount: amount },
-      include: Category
+      include: {
+        model: Category,
+        attributes: ['id', 'name', 'trading_amount']
+      }
     });
     res.json(users);
   } catch (err) {

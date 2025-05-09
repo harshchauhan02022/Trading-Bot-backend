@@ -17,6 +17,15 @@ const User = sequelize.define('User', {
   app_name: DataTypes.STRING,
   api_key: DataTypes.STRING,
   api_secret_key: DataTypes.STRING,
+  trading_amount: DataTypes.STRING,
+  categoryId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'categories',
+      key: 'id'
+    }
+  },
   aadhar_front: DataTypes.STRING,
   aadhar_back: DataTypes.STRING,
   status: {
