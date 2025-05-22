@@ -1,72 +1,80 @@
 const Trade = require('../models/trade.model');
 
-// Create new trade
 exports.createTrade = async (req, res) => {
   try {
-    const { user_id, stock_symbol, trade_type, quantity, price } = req.body;
-
-    if (!['buy', 'sell'].includes(trade_type)) {
-      return res.status(400).json({ message: 'Invalid trade type' });
-    }
-
+    const { trade_date, trade_time, symbol, transaction_type, margin, loss, profit, notes } = req.body;
     const trade = await Trade.create({
-      user_id,
-      stock_symbol,
-      trade_type,
-      quantity,
-      price,
+      user_id: req.user.id,
+      trade_date,
+      trade_time,
+      symbol,
+      transaction_type,
+      margin,
+      loss,
+      profit,
+      notes,
     });
-
-    res.status(201).json({ message: 'Trade created successfully', trade });
+    res.status(201).json(trade);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating trade', error: error.message });
+    res.status(500).json({ error: 'Trade creation failed' });
   }
 };
 
-// Get all trades
-exports.getAllTrades = async (req, res) => {
+exports.getUserTrades = async (req, res) => {
   try {
-    const trades = await Trade.findAll();
-    res.status(200).json(trades);
+    const trades = await Trade.findAll({
+      where: { user_id: req.user.id },
+      order: [['trade_date', 'DESC']],
+    });
+    res.json(trades);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching trades', error: error.message });
+    res.status(500).json({ error: 'Failed to fetch trades' });
   }
 };
 
-// Get trade by ID
 exports.getTradeById = async (req, res) => {
   try {
-    const trade = await Trade.findByPk(req.params.id);
-    if (trade) res.status(200).json(trade);
-    else res.status(404).json({ message: 'Trade not found' });
+    const { id } = req.params;
+    const trade = await Trade.findOne({ where: { id, user_id: req.user.id } });
+
+    if (!trade) {
+      return res.status(404).json({ error: 'Trade not found' });
+    }
+
+    res.json(trade);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching trade', error: error.message });
+    res.status(500).json({ error: 'Failed to fetch trade' });
   }
 };
 
-// Update trade
 exports.updateTrade = async (req, res) => {
   try {
-    const { stock_symbol, trade_type, quantity, price } = req.body;
-    const trade = await Trade.findByPk(req.params.id);
-    if (trade) {
-      await trade.update({ stock_symbol, trade_type, quantity, price });
-      res.status(200).json({ message: 'Trade updated successfully', trade });
-    } else res.status(404).json({ message: 'Trade not found' });
+    const { id } = req.params;
+    const trade = await Trade.findOne({ where: { id, user_id: req.user.id } });
+
+    if (!trade) {
+      return res.status(404).json({ error: 'Trade not found' });
+    }
+
+    await trade.update(req.body);
+    res.json({ message: 'Trade updated successfully', trade });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating trade', error: error.message });
+    res.status(500).json({ error: 'Failed to update trade' });
   }
 };
 
-// Delete trade
 exports.deleteTrade = async (req, res) => {
   try {
-    const trade = await Trade.findByPk(req.params.id);
-    if (trade) {
-      await trade.destroy();
-      res.status(200).json({ message: 'Trade deleted successfully' });
-    } else res.status(404).json({ message: 'Trade not found' });
+    const { id } = req.params;
+    const trade = await Trade.findOne({ where: { id, user_id: req.user.id } });
+
+    if (!trade) {
+      return res.status(404).json({ error: 'Trade not found' });
+    }
+
+    await trade.destroy();
+    res.json({ message: 'Trade deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting trade', error: error.message });
+    res.status(500).json({ error: 'Failed to delete trade' });
   }
 };

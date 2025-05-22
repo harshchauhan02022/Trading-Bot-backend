@@ -1,41 +1,67 @@
-const { Category, User } = require("../models/category.model");
+const Category = require('../models/category.model');
 
-exports.addCategory = async (req, res) => {
+// Create a new category
+exports.create = async (req, res) => {
   try {
-    const { name, trading_amount } = req.body;
-    const category = await Category.create({ name, trading_amount });
-    res.json({ message: "Category created", category });
+    const { categories_name, trading_amount } = req.body;
+
+    const category = await Category.create({
+      categories_name,
+      trading_amount: parseInt(trading_amount),
+    });
+
+    res.status(201).json(category);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
-exports.getAllUsers = async (req, res) => {
+// Retrieve all categories
+exports.getAll = async (req, res) => {
   try {
-    const users = await User.findAll({
-      include: {
-        model: Category,
-        attributes: ['id', 'name', 'trading_amount']
-      }
-    });
-    res.json(users);
+    const categories = await Category.findAll();
+    res.json(categories);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
-exports.getUsersByAmount = async (req, res) => {
+// Update a category by ID
+exports.update = async (req, res) => {
   try {
-    const amount = req.params.amount;
-    const users = await User.findAll({
-      where: { trading_amount: amount },
-      include: {
-        model: Category,
-        attributes: ['id', 'name', 'trading_amount']
-      }
-    });
-    res.json(users);
+    const { id } = req.params;
+    const { categories_name, trading_amount } = req.body;
+
+    const category = await Category.findByPk(id);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    category.categories_name = categories_name || category.categories_name;
+    category.trading_amount = trading_amount ? parseInt(trading_amount) : category.trading_amount;
+
+    await category.save();
+
+    res.json({ message: "Category updated successfully", category });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Delete a category by ID
+exports.delete = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const category = await Category.findByPk(id);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    await category.destroy();
+
+    res.json({ message: "Category deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

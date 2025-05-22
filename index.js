@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const adminRoutes = require('./src/componamtes/routes/admin.routes');
-const userRoutes = require('./src/componamtes/routes/user.routes')
+const userRoutes = require('./src/componamtes/routes/UsersRoutes/user.routes')
 const tradeRoutes = require('./src/componamtes/routes/trade.routes')
 const dashboardRoutes = require('./src/componamtes/routes/dashboard.routes')
 const Sequelize = require('./src/config/db');

@@ -1,25 +1,19 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../../config/db");
+const { DataTypes } = require('sequelize');
+const sequelize = require('../../config/db');
 
-const Category = sequelize.define("Category", {
- name: {
+const Category = sequelize.define('Category', {
+ categories_name: {
   type: DataTypes.STRING,
-  allowNull: false
+  allowNull: false,
  },
  trading_amount: {
   type: DataTypes.INTEGER,
-  allowNull: false
- }
+  allowNull: false,
+ },
 }, {
- tableName: "categories",
- timestamps: false
+ timestamps: true,
+ createdAt: 'created_at',
+ updatedAt: 'updated_at',
 });
 
-const User = sequelize.define("User", {
-
-}, {
- tableName: "users",
- timestamps: false
-});
-
-module.exports = { Category, User };
+module.exports = Category;

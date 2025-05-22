@@ -6,25 +6,37 @@ const Trade = sequelize.define('Trade', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  stock_symbol: {
-    type: DataTypes.STRING(10),
-    allowNull: false,
-  },
-  trade_type: {
-    type: DataTypes.ENUM('buy', 'sell'),
-    allowNull: false,
-  },
-  quantity: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  price: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-  },
   trade_date: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
+    type: DataTypes.DATEONLY,
+    allowNull: false,
+  },
+  trade_time: {
+    type: DataTypes.TIME,
+    allowNull: false,
+  },
+  symbol: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+  },
+  transaction_type: {
+    type: DataTypes.ENUM('Buy', 'Sell'),
+    allowNull: false,
+  },
+  margin: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
+  loss: {
+    type: DataTypes.DECIMAL(10, 2),
+    defaultValue: 0.00,
+  },
+  profit: {
+    type: DataTypes.DECIMAL(10, 2),
+    defaultValue: 0.00,
+  },
+  notes: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
   },
 }, {
   timestamps: true,
