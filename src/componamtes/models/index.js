@@ -1,10 +1,14 @@
-const Sequelize = require('sequelize');
+// const Sequelize = require('sequelize');
 const sequelize = require('../../config/db');
 const User = require('../models/UsersModels/user.model');
 const Referral = require('../models/UsersModels/referral.model');
 
 const Category = require('./category.model');
 const TrackHistory = require('./UsersModels/trackHistory.model');
+
+
+const User = defineUser(sequelize);
+const Referral = defineReferral(sequelize);
 
 TrackHistory.belongsTo(Category, { foreignKey: 'categoryId' });
 
