@@ -9,6 +9,7 @@ const tradeRoutes = require('./src/componamtes/routes/trade.routes')
 const dashboardRoutes = require('./src/componamtes/routes/dashboard.routes')
 const Sequelize = require('./src/config/db');
 const CategoryRoutes = require('./src/componamtes/routes/category.Routes');
+const orderRoutes = require('./src/componamtes/routes/order.routes')
 
 const app = express();
 app.use(cors());
@@ -20,6 +21,7 @@ app.use('/api', userRoutes);
 app.use('/api', tradeRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/categories', CategoryRoutes)
+app.use('/api', orderRoutes)
 
 // Sync Sequelize and start server
 Sequelize.sync().then(() => {

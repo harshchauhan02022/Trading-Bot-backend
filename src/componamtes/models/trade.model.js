@@ -38,6 +38,14 @@ const Trade = sequelize.define('Trade', {
     type: DataTypes.STRING(255),
     allowNull: true,
   },
+  category_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'categories',
+      key: 'id',
+    },
+  },
 }, {
   timestamps: true,
   createdAt: 'created_at',

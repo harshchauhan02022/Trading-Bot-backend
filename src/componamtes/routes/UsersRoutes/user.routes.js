@@ -4,7 +4,6 @@ const userController = require('../../controllers/UsersControllers/user.controll
 const levelController = require('../../controllers/UsersControllers/level.controller');
 const referralController = require('../../controllers/UsersControllers/rferral.controller');
 const trackHistoryController = require('../../controllers/UsersControllers/trackHistory.controller');
-const OrderController = require('../../controllers/UsersControllers/OrderController')
 const authenticate = require('../../utils/authMiddleware')
 const upload = require('../../../middleware/upload');
 
@@ -30,5 +29,5 @@ router.get('/users/refer-details/:id', referralController.getReferDetails);
 router.get('/users/trade-history/:id', trackHistoryController.getTradeHistoryByCategory);
 
 router.get('/levels', levelController.getAllLevels);
-router.get('/order', authenticate, OrderController.getUserOrders);
+// router.get('/order', authenticate, OrderController.getUserOrders);
 module.exports = router;

@@ -7,8 +7,7 @@ exports.createUser = async (req, res) => {
       full_name, email, password, mobile_number, address,
       registration_date, trading_categories, gender, state,
       broker, refer_id, exness_broker_id, app_name,
-      api_key, api_secret_key, trading_amount, categoryId,
-      direct_earning, team_earning, total_level_achieved, team_count, wallet_balance
+      api_key, api_secret_key
     } = req.body;
 
     const existingUser = await User.findOne({ where: { email } });
@@ -22,21 +21,35 @@ exports.createUser = async (req, res) => {
     const aadharBack = req.files?.aadhar_back?.[0]?.filename || null;
 
     const user = await User.create({
-      full_name, email, password: hashedPassword, mobile_number, address,
-      registration_date, trading_categories, gender, state,
-      broker, refer_id, exness_broker_id, app_name,
-      api_key, api_secret_key, trading_amount, direct_earning, team_earning,
-      total_level_achieved, team_count, wallet_balance,
+      full_name,
+      email,
+      password: hashedPassword,
+      mobile_number,
+      address,
+      registration_date,
+      trading_categories,
+      gender,
+      state,
+      broker,
+      refer_id,
+      exness_broker_id,
+      app_name,
+      api_key,
+      api_secret_key,
       aadhar_front: aadharFront,
-      aadhar_back: aadharBack,
-      categoryId
+      aadhar_back: aadharBack
+      // ✅ The following fields will be auto-filled by default values:
+      // trading_amount, direct_earning, team_earning, total_level_achieved,
+      // team_count, wallet_balance, categoryId
     });
 
     res.status(201).json({ message: 'User created successfully', user });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Error creating user', error: err.message });
   }
 };
+
 
 exports.getAllUsers = async (req, res) => {
   try {

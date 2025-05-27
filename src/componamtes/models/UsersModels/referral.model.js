@@ -16,7 +16,7 @@ const Referral = sequelize.define('referrals', {
  referred_user_id: {
   type: DataTypes.INTEGER,
   allowNull: false,
- },
+ },     
  referral_date: {
   type: DataTypes.DATEONLY,
   allowNull: false,
