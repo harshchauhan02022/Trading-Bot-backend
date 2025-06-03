@@ -1,19 +1,44 @@
-const { User, UserCategory, Wallet, ReferralStat, Referral } = require('../models/dashboard.model');
+const { User, UserCategory, Wallet, ReferralStat, Trade , Approval } = require('../models/dashboard.model');
 const { Op } = require('sequelize');
-const Trade = require('../models/trade.model'); 
-const Order = require('../models/order.model'); 
+const Order = require('../models/order.model');
 
 module.exports = {
- getNewUsers: (req, res) => {
-  User.count({ where: { status: 'new' } })
-   .then(count => res.json({ new_users: count }))
-   .catch(err => res.status(500).json({ error: err.message }));
- },
+ getDashboardData: async (req, res) => {
+  try {
+   const [
+    totalUsers,
+    newUsers,
+    blockedUsers,
+    awaitingApproval,
+    totalTrades,
+    targetTrades,
+    stopHuntTrades,
+    totalProfitResult
+   ] = await Promise.all([
+    User.count(),
+    User.count({ where: { status: 'new' } }),
+    User.count({ where: { status: 'blocked' } }),
+    Approval.count({ where: { status: 'pending' } }),
+    Trade.count(),
+    Trade.count({ where: { type: 'target' } }),
+    Trade.count({ where: { type: 'stop_hunt' } }),
+    Trade.sum('profit')
+   ]);
 
- getBlockedUsers: (req, res) => {
-  User.count({ where: { status: 'blocked' } })
-   .then(count => res.json({ blocked_users: count }))
-   .catch(err => res.status(500).json({ error: err.message }));
+   res.json({
+    totalUsers,
+    newUsers,
+    awaitingApproval,
+    blockedUsers,
+    totalTrades,
+    targetTrades,
+    stopHuntTrades,
+    totalProfit: totalProfitResult || 0
+   });
+  } catch (err) {
+   console.error('Dashboard error:', err);
+   res.status(500).json({ error: err.message });
+  }
  },
 
  getFullDashboardData: async (req, res) => {
@@ -45,7 +70,8 @@ module.exports = {
      email: user.email,
      mobile_number: user.mobile_number,
      gender: user.gender,
-     address: `City ${user.address_city}, Dist ${user.address_district}`,
+     // address: `City ${user.address_city}, Dist ${user.address_district}`,
+     address: user.address,
      state: user.state,
      registration_date: formatDate(user.registration_date),
      // activation_date: formatDate(user.activation_date),
@@ -108,7 +134,7 @@ module.exports = {
  }
 };
 
-// Helper function
+
 function formatDate(date) {
  if (!date) return null;
  const d = new Date(date);

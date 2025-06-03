@@ -1,4 +1,3 @@
-// src/models/UsersModels/user.model.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../../config/db');
 
@@ -21,26 +20,7 @@ const User = sequelize.define('User', {
   api_secret_key: DataTypes.STRING,
   trading_amount: DataTypes.STRING,
   categoryId: DataTypes.STRING,
-  // direct_earning: {
-  //   type: DataTypes.FLOAT,
-  //   allowNull: true,
-  //   defaultValue: 0
-  // },
-  // team_earning: {
-  //   type: DataTypes.FLOAT,
-  //   allowNull: true,
-  //   defaultValue: 0
-  // },
-  // total_level_achieved: {
-  //   type: DataTypes.INTEGER,
-  //   allowNull: true,
-  //   defaultValue: 0
-  // },
-  // team_count: {
-  //   type: DataTypes.INTEGER,
-  //   allowNull: true,
-  //   defaultValue: 0
-  // },
+
   aadhar_front: DataTypes.STRING,
   aadhar_back: DataTypes.STRING,
   status: {
@@ -48,16 +28,13 @@ const User = sequelize.define('User', {
     allowNull: true,
     defaultValue: 'new'
   },
-  // wallet_balance: {
-  //   type: DataTypes.FLOAT,
-  //   allowNull: true,
-  //   defaultValue: 0
-  // }
+
 }, {
   tableName: 'users',
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: false
 });
+
 
 module.exports = User;

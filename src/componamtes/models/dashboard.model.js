@@ -1,15 +1,26 @@
-const User = require('../models/UsersModels/user.model');
+const sequelize = require('../../config/db');
+const { DataTypes } = require('sequelize');
+
 const UserCategory = require('../models/category.model');
-const Wallet = require('../models/wallet.model');
-const ReferralStat = require('../models/referralStat.model');
+const User = require('./UsersModels/user.model');
+const Wallet = require('./wallet.model');
+const ReferralStat = require('./referralStat.model');
+const Trade = require('./trade.model');
+const Order = require('./order.model');
 const Referral = require('../models/UsersModels/referral.model');
 
-// Associations
-User.hasOne(UserCategory, { foreignKey: 'user_id' });
+const Approval = sequelize.define('Approval', {
+  user_id: DataTypes.INTEGER,
+  status: DataTypes.STRING
+}, {
+  tableName: 'approvals',
+  timestamps: false
+});
+
+User.belongsTo(UserCategory, { foreignKey: 'categoryId' }); 
 User.hasOne(Wallet, { foreignKey: 'user_id' });
 User.hasOne(ReferralStat, { foreignKey: 'user_id' });
 
-// Many-to-Many Self Association for Referral
 User.belongsToMany(User, {
   through: Referral,
   as: 'Referrer',
@@ -19,8 +30,11 @@ User.belongsToMany(User, {
 
 module.exports = {
   User,
-  UserCategory,
+  Approval,
   Wallet,
   ReferralStat,
+  Trade,
+  Order,
+  UserCategory,
   Referral
 };
