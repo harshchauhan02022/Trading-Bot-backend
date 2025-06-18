@@ -29,17 +29,42 @@ exports.createTrade = async (req, res) => {
 exports.getUserTrades = async (req, res) => {
   try {
     const { user_id } = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
 
     if (!user_id) return res.status(400).json({ error: 'user_id is required' });
 
-    const trades = await Trade.findAll({
+    const MAX_LIMIT = 100;
+    if (limit > MAX_LIMIT) {
+      return res.status(400).json({
+        error: `Limit cannot exceed ${MAX_LIMIT}`
+      });
+    }
+
+    const { count, rows: trades } = await Trade.findAndCountAll({
       where: { user_id },
       order: [['trade_date', 'DESC']],
+      limit: limit,
+      offset: offset
     });
 
-    res.json(trades);
+    const totalPages = Math.ceil(count / limit);
+
+    res.json({
+      success: true,
+      currentPage: page,
+      totalPages: totalPages,
+      totalTrades: count,
+      tradesPerPage: limit,
+      trades: trades
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch trades' });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch trades',
+      details: error.message
+    });
   }
 };
 
@@ -99,19 +124,96 @@ exports.deleteTrade = async (req, res) => {
 exports.getTradesByCategory = async (req, res) => {
   try {
     const { category_id } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
 
-    const trades = await Trade.findAll({
+    const MAX_LIMIT = 100;
+    if (limit > MAX_LIMIT) {
+      return res.status(400).json({
+        error: `Limit cannot exceed ${MAX_LIMIT}`
+      });
+    }
+
+    const { count, rows: trades } = await Trade.findAndCountAll({
       where: { category_id },
       order: [['trade_date', 'DESC']],
+      limit: limit,
+      offset: offset
     });
 
-    res.json(trades);
+    const totalPages = Math.ceil(count / limit);
+
+    res.json({
+      success: true,
+      currentPage: page,
+      totalPages: totalPages,
+      totalTrades: count,
+      tradesPerPage: limit,
+      trades: trades
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch trades by category', details: error.message });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch trades by category',
+      details: error.message
+    });
   }
 };
 
-// exports.getTradesByMultipleCategories = async (req, res) => {
+exports.getTradesByMultipleCategories = async (req, res) => {
+  try {
+    const { ids } = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    if (!ids) {
+      return res.status(400).json({
+        success: false,
+        error: 'Category IDs are required'
+      });
+    }
+
+    const MAX_LIMIT = 100;
+    if (limit > MAX_LIMIT) {
+      return res.status(400).json({
+        success: false,
+        error: `Limit cannot exceed ${MAX_LIMIT}`
+      });
+    }
+
+    const categoryIds = ids.split(',').map(id => parseInt(id.trim()));
+
+    const { count, rows: trades } = await Trade.findAndCountAll({
+      where: {
+        category_id: {
+          [Op.in]: categoryIds
+        }
+      },
+      order: [['trade_date', 'DESC']],
+      limit: limit,
+      offset: offset
+    });
+
+    const totalPages = Math.ceil(count / limit);
+
+    res.json({
+      success: true,
+      currentPage: page,
+      totalPages: totalPages,
+      totalTrades: count,
+      tradesPerPage: limit,
+      trades: trades
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch trades by categories',
+      details: error.message
+    });
+  }
+};
 //   try {
 //     const { ids } = req.query;
 

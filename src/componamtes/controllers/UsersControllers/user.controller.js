@@ -53,13 +53,41 @@ exports.createUser = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.findAll({
-      order: [['created_At', 'DESC']]
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const MAX_LIMIT = 100;
+    if (limit > MAX_LIMIT) {
+      return res.status(400).json({
+        success: false,
+        message: `Limit cannot exceed ${MAX_LIMIT}`
+      });
+    }
+
+    const { count, rows: users } = await User.findAndCountAll({
+      order: [['created_At', 'DESC']],
+      limit: limit,
+      offset: offset
     });
-    res.status(200).json(users);
+
+    const totalPages = Math.ceil(count / limit);
+
+    res.status(200).json({
+      success: true,
+      currentPage: page,
+      totalPages: totalPages,
+      totalUsers: count,
+      usersPerPage: limit,
+      users: users
+    });
   } catch (error) {
     console.error('Error fetching users:', error);
-    res.status(500).json({ message: 'Error fetching users', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching users',
+      error: error.message
+    });
   }
 };
 

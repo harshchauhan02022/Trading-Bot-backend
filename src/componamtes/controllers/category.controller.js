@@ -1,6 +1,5 @@
 const Category = require('../models/category.model');
 
-// Create a new category
 exports.create = async (req, res) => {
   try {
     const { categories_name, trading_amount } = req.body;
@@ -16,7 +15,6 @@ exports.create = async (req, res) => {
   }
 };
 
-// Retrieve all categories
 exports.getAll = async (req, res) => {
   try {
     const categories = await Category.findAll();
@@ -26,7 +24,6 @@ exports.getAll = async (req, res) => {
   }
 };
 
-// Update a category by ID
 exports.update = async (req, res) => {
   try {
     const { id } = req.params;
@@ -48,7 +45,6 @@ exports.update = async (req, res) => {
   }
 };
 
-// Delete a category by ID
 exports.delete = async (req, res) => {
   try {
     const { id } = req.params;
