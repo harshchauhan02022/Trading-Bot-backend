@@ -11,7 +11,8 @@ const Sequelize = require('./src/config/db');
 const CategoryRoutes = require('./src/componamtes/routes/category.Routes');
 const orderRoutes = require('./src/componamtes/routes/order.routes');
 const StrategyRoutes = require('./src/componamtes/routes/Strategies.routes');
-const MarketRoutes = require('.//src/componamtes/routes/market.routes')
+const MarketRoutes = require('.//src/componamtes/routes/market.routes');
+const paymentsRoutes = require('./src/componamtes/routes/paymentHistory.route')
 
 const app = express();
 app.use(cors());
@@ -29,6 +30,7 @@ app.use('/api', orderRoutes)
 
 app.use('/api/strategies', StrategyRoutes);
 app.use('/api/market', MarketRoutes);
+app.use('/api/payments', paymentsRoutes)
 
 
 Sequelize.sync().then(() => {
