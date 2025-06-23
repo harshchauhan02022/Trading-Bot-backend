@@ -1,5 +1,3 @@
-// controllers/trackHistory.controller.js
-
 const TrackHistory = require('../../models/trade.model');
 const Category = require('../../models/category.model');
 

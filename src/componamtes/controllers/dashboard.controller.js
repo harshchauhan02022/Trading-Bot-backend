@@ -18,7 +18,9 @@ module.exports = {
     User.count(),
     User.count({ where: { status: 'new' } }),
     User.count({ where: { status: 'blocked' } }),
-    Approval.count({ where: { status: 'pending' } }),
+    User.count({ where: { status: 'awaiting' } }),
+    // User.count({ where: { status: 'active' } }),
+
     Trade.count(),
     Trade.count({ where: { transaction_type: 'Buy' } }),
     Trade.count({ where: { transaction_type: 'Sell' } }),
