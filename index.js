@@ -15,6 +15,7 @@ const MarketRoutes = require('.//src/componamtes/routes/market.routes');
 const paymentsRoutes = require('./src/componamtes/routes/paymentHistory.route')
 
 const app = express();
+app.use(cors({ origin: 'http://localhost:5174/' }));
 app.use(cors());
 app.use('/public', express.static('public'));
 app.use(bodyParser.json());
@@ -27,10 +28,9 @@ app.use('/api', tradeRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/categories', CategoryRoutes)
 app.use('/api', orderRoutes)
-
 app.use('/api/strategies', StrategyRoutes);
 app.use('/api/market', MarketRoutes);
-app.use('/api/payments', paymentsRoutes)
+app.use('/api', paymentsRoutes)
 
 
 Sequelize.sync().then(() => {

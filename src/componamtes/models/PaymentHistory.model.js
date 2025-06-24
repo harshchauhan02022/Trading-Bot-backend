@@ -7,11 +7,11 @@ const PaymentHistory = sequelize.define('PaymentHistory', {
   autoIncrement: true,
   primaryKey: true
  },
- userId: {
+ categoryId: {
   type: DataTypes.INTEGER,
   allowNull: false,
   references: {
-   model: 'users',  // make sure your user model table name is 'users'
+   model: 'categories',
    key: 'id'
   }
  },

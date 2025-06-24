@@ -21,25 +21,22 @@ module.exports = {
     payments: rows
    });
   } catch (err) {
-   return res.status(500).json({
-    success: false,
-    error: err.message
-   });
+   return res.status(500).json({ success: false, error: err.message });
   }
  },
 
- getPaymentsByUser: async (req, res) => {
+ getPaymentsByCategory: async (req, res) => {
   try {
-   const { userId } = req.params;
+   const { categoryId } = req.params;
 
    const payments = await PaymentHistory.findAll({
-    where: { userId },
+    where: { categoryId },
     order: [['created_at', 'DESC']]
    });
 
    return res.json({
     success: true,
-    userId,
+    categoryId,
     totalRecords: payments.length,
     payments
    });
@@ -50,17 +47,17 @@ module.exports = {
 
  createPayment: async (req, res) => {
   try {
-   const { userId, amount, paymentMethod, transactionId, status } = req.body;
+   const { categoryId, amount, paymentMethod, transactionId, status } = req.body;
 
-   if (!userId || !amount || !paymentMethod) {
+   if (!categoryId || !amount || !paymentMethod) {
     return res.status(400).json({
      success: false,
-     error: 'userId, amount, and paymentMethod are required'
+     error: 'categoryId, amount, and paymentMethod are required'
     });
    }
 
    const payment = await PaymentHistory.create({
-    userId,
+    categoryId,
     amount,
     paymentMethod,
     status: status || 'pending',
