@@ -18,9 +18,10 @@ const app = express();
 app.use(cors({ origin: 'http://localhost:5174/' }));
 app.use(cors());
 app.use('/public', express.static('public'));
-app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
 
 app.use('/api/admin', adminRoutes);
 app.use('/api', userRoutes);
@@ -31,6 +32,11 @@ app.use('/api', orderRoutes)
 app.use('/api/strategies', StrategyRoutes);
 app.use('/api/market', MarketRoutes);
 app.use('/api', paymentsRoutes)
+
+// Express.js example
+app.get("/", (req, res) => {
+  res.json([{ id: 1, name: "Harsh" }]);
+});
 
 
 Sequelize.sync().then(() => {
