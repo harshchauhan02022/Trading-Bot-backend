@@ -33,8 +33,6 @@ exports.getUserTrades = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
 
-    if (!user_id) return res.status(400).json({ error: 'user_id is required' });
-
     const MAX_LIMIT = 100;
     if (limit > MAX_LIMIT) {
       return res.status(400).json({
@@ -42,8 +40,14 @@ exports.getUserTrades = async (req, res) => {
       });
     }
 
+    // Set up the where condition
+    const whereCondition = {};
+    if (user_id) {
+      whereCondition.user_id = user_id;
+    }
+
     const { count, rows: trades } = await Trade.findAndCountAll({
-      where: { user_id },
+      where: whereCondition,
       order: [['trade_date', 'DESC']],
       limit: limit,
       offset: offset
@@ -53,6 +57,7 @@ exports.getUserTrades = async (req, res) => {
 
     res.json({
       success: true,
+      userFiltered: !!user_id,
       currentPage: page,
       totalPages: totalPages,
       totalTrades: count,
@@ -214,26 +219,3 @@ exports.getTradesByMultipleCategories = async (req, res) => {
     });
   }
 };
-//   try {
-//     const { ids } = req.query;
-
-//     if (!ids) {
-//       return res.status(400).json({ error: 'Category IDs are required' });
-//     }
-
-//     const categoryIds = ids.split(',').map(id => parseInt(id.trim()));
-
-//     const trades = await Trade.findAll({
-//       where: {
-//         category_id: {
-//           [Op.in]: categoryIds
-//         }
-//       },
-//       order: [['trade_date', 'DESC']],
-//     });
-
-//     res.json(trades);
-//   } catch (error) {
-//     res.status(500).json({ error: 'Failed to fetch trades by categories', details: error.message });
-//   }
-// };

@@ -10,16 +10,23 @@ exports.createUser = async (req, res) => {
       api_key, api_secret_key
     } = req.body;
 
+    // Check if user with email already exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the password only if it's provided
+    let hashedPassword = null;
+    if (password && password.trim() !== '') {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
 
+    // Handle file uploads
     const aadharFront = req.files?.aadhar_front?.[0]?.filename || null;
     const aadharBack = req.files?.aadhar_back?.[0]?.filename || null;
 
+    // Create user with or without password
     const user = await User.create({
       full_name,
       email,
@@ -38,9 +45,6 @@ exports.createUser = async (req, res) => {
       api_secret_key,
       aadhar_front: aadharFront,
       aadhar_back: aadharBack
-      // ✅ The following fields will be auto-filled by default values:
-      // trading_amount, direct_earning, team_earning, total_level_achieved,
-      // team_count, wallet_balance, categoryId
     });
 
     res.status(201).json({ message: 'User created successfully', user });
@@ -49,6 +53,7 @@ exports.createUser = async (req, res) => {
     res.status(500).json({ message: 'Error creating user', error: err.message });
   }
 };
+
 
 exports.getAllUsers = async (req, res) => {
   try {
