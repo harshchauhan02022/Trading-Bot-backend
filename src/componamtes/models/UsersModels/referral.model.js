@@ -1,50 +1,36 @@
 const { DataTypes } = require('sequelize');
-const User = require('./user.model');
 const sequelize = require('../../../config/db');
+const User = require('./user.model');
 
-
-const Referral = sequelize.define('referrals', {
- id: {
-  type: DataTypes.INTEGER,
-  primaryKey: true,
-  autoIncrement: true
- },
- referrer_id: {
+const ReferralEarning = sequelize.define('ReferralEarning', {
+ user_id: {
   type: DataTypes.INTEGER,
   allowNull: false,
  },
- referred_user_id: {
+ from_user_id: {
   type: DataTypes.INTEGER,
-  allowNull: false,
- },     
- referral_date: {
-  type: DataTypes.DATEONLY,
-  allowNull: false,
+  allowNull: true,
  },
- status: {
-  // type: DataTypes.ENUM('Pending', 'Active', 'Expired'),
-  type: DataTypes.STRING,
-  defaultValue: 'Pending',
-  allowNull: false,
- },
- reward: {
+ amount: {
   type: DataTypes.DECIMAL(10, 2),
-  defaultValue: 0.00,
+  allowNull: false,
  },
+ level: {
+  type: DataTypes.INTEGER,
+  allowNull: false,
+  defaultValue: 1,
+ }
 }, {
- tableName: 'referrals',
+ tableName: 'referral_earnings',
  timestamps: true,
+ createdAt: 'created_at',
+ updatedAt: false,
 });
 
-Referral.belongsTo(User, {
- foreignKey: 'referred_user_id',
- as: 'ReferredUser'
-});
+User.hasMany(ReferralEarning, { foreignKey: 'user_id' });
+ReferralEarning.belongsTo(User, { foreignKey: 'user_id', as: 'receiver' });
 
-User.hasMany(Referral, {
- foreignKey: 'referrer_id',
- as: 'Referrals'
-});
+User.hasMany(ReferralEarning, { foreignKey: 'from_user_id' });
+ReferralEarning.belongsTo(User, { foreignKey: 'from_user_id', as: 'source' });
 
-
-module.exports = Referral;
+module.exports = ReferralEarning;

@@ -18,13 +18,13 @@ const Strategy = sequelize.define('Strategy', {
   allowNull: false,
   references: { model: 'categories', key: 'id' }
  },
- transactionType: {
+ transaction_type: {
   type: DataTypes.ENUM('buy', 'sell'),
   allowNull: false
  },
  wishlist: { type: DataTypes.STRING, allowNull: false },
  lot: { type: DataTypes.STRING, allowNull: false, defaultValue: '1' },
- orderType: {
+ order_type: {
   type: DataTypes.ENUM('market', 'limit'),
   allowNull: false
  },

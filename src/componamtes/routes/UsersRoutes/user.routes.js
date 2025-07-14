@@ -7,7 +7,7 @@ const trackHistoryController = require('../../controllers/UsersControllers/track
 const user_otpController = require('../../controllers/UsersControllers/user_otp.controller')
 const authenticate = require('../../utils/authMiddleware')
 const upload = require('../../../middleware/upload');
-
+   
 router.post(
   '/users/register',
   upload.fields([
@@ -24,7 +24,7 @@ router.get('/users/:id', userController.getUserById);
 router.put('/users/:id', userController.updateUser);
 router.delete('/users/:id', userController.deleteUser);
 
-router.get('/users/refer-details/:id', referralController.getReferDetails);
+// router.get('/users/refer-details/:id', referralController.getReferDetails);
 router.get('/users/trade-history/:id', trackHistoryController.getTradeHistoryByCategory);
 
 router.get('/levels', levelController.getAllLevels);

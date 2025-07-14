@@ -5,28 +5,31 @@ exports.createUser = async (req, res) => {
   try {
     const {
       full_name, email, password, mobile_number, address,
-      registration_date, trading_categories, gender, state,
-      broker, refer_id, exness_broker_id, app_name,
+      registration_date, activation_date, trading_categories, gender, state,
+      broker, exness_broker_id, app_name,
       api_key, api_secret_key
     } = req.body;
 
-    // Check if user with email already exists
+    // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash the password only if it's provided
+    // Hash password
     let hashedPassword = null;
     if (password && password.trim() !== '') {
       hashedPassword = await bcrypt.hash(password, 10);
     }
 
+    // Auto-generate refer_id (first 3 letters of name + full mobile number)
+    const referId = `${full_name?.substring(0, 3).toLowerCase()}${mobile_number}`;
+
     // Handle file uploads
     const aadharFront = req.files?.aadhar_front?.[0]?.filename || null;
     const aadharBack = req.files?.aadhar_back?.[0]?.filename || null;
 
-    // Create user with or without password
+    // Create user
     const user = await User.create({
       full_name,
       email,
@@ -34,11 +37,12 @@ exports.createUser = async (req, res) => {
       mobile_number,
       address,
       registration_date,
+      activation_date,
       trading_categories,
       gender,
       state,
       broker,
-      refer_id,
+      refer_id: referId, // ✅ auto-generated refer_id
       exness_broker_id,
       app_name,
       api_key,
@@ -53,7 +57,6 @@ exports.createUser = async (req, res) => {
     res.status(500).json({ message: 'Error creating user', error: err.message });
   }
 };
-
 
 exports.getAllUsers = async (req, res) => {
   try {

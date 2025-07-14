@@ -30,7 +30,30 @@ module.exports = {
 
   createStrategy: async (req, res) => {
     try {
-      const newStrategy = await Strategy.create(req.body);
+      const {
+        category, transactionType, wishlist, lot,
+        orderType, limit, userId
+      } = req.body;
+
+      // ✅ Log each variable to debug the issue
+      console.log('Received values:', {
+        category, transactionType, wishlist, lot, orderType, limit, userId
+      });
+
+      if (!category || !transactionType || !wishlist || !lot || !orderType || !userId) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      const newStrategy = await Strategy.create({
+        categoryId: category,
+        transaction_type: transactionType,
+        wishlist,
+        lot,
+        order_type: orderType,
+        entry_limit: limit,
+        userId
+      });
+
       res.status(201).json(newStrategy);
     } catch (err) {
       res.status(400).json({ error: err.message });
@@ -47,13 +70,29 @@ module.exports = {
         lot, userId
       } = req.body;
 
+      // Log request body for debugging
+      // console.log('Incoming request body:', req.body);
+
+      // Validate required fields
+      const missingFields = [];
+      if (!selected_category) missingFields.push('selected_category');
+      if (!wishlist) missingFields.push('wishlist');
+      if (!order_type) missingFields.push('order_type');
+      if (!transaction_type) missingFields.push('transaction_type');
+      if (!userId) missingFields.push('userId');
+
+      if (missingFields.length > 0) {
+        return res.status(400).json({ error: `Required fields are missing: ${missingFields.join(', ')}` });
+      }
+
+      // Create Strategy
       const strategy = await Strategy.create({
         userId,
         categoryId: selected_category,
         wishlist,
-        orderType: order_type,
+        order_type: order_type,
         entry_limit,
-        transactionType: transaction_type,
+        transaction_type: transaction_type,
         exit_limit,
         name: 'Manual Strategy',
         type: 'custom',
@@ -61,6 +100,7 @@ module.exports = {
         lot
       }, { transaction });
 
+      // Insert Entry Conditions
       for (const [index, condition] of entry_condition.entries()) {
         await Condition.create({
           strategyId: strategy.id,
@@ -78,6 +118,7 @@ module.exports = {
         }, { transaction });
       }
 
+      // Insert Exit Conditions
       for (const [index, condition] of exit_condition.entries()) {
         await Condition.create({
           strategyId: strategy.id,
@@ -103,9 +144,11 @@ module.exports = {
       });
 
       return res.status(201).json({ success: true, data: fullStrategy });
+
     } catch (error) {
       await transaction.rollback();
       return res.status(500).json({ error: error.message });
     }
   }
+
 };
